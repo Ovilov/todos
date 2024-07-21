@@ -1,41 +1,38 @@
-// rrd
+//react-router-dom
 import {
-  createBrowserRouter,
   Navigate,
   RouterProvider,
+  createBrowserRouter,
 } from "react-router-dom";
 
-//layout
-import MainLayout from "./layout/MainLayout";
-
-//pages
-import {
-  Home,
-  About,
-  Contact,
-  Login,
-  Register,
-  ErrorPage,
-  Todos,
-} from "./pages";
-
-//register
-import { action as RegisterAction } from "./pages/Register";
-import { action as LoginAction } from "./pages/Login";
-import ProtectedRoutes from "./components/ProtectedRoutes";
-
-import { useGlobalContext } from "./hooks/useGlobalContext";
 import { useEffect } from "react";
+//components
+import { ProtectedRoutes } from "./components";
+import { useContext } from "react";
+//layouts
+import MainLayout from "./layouts/MainLayout";
+import { GlobalContext } from "./context/GlobalContext";
+//pages
+import { Home, Create, Login, Signup, Meal } from "./pages";
+import { loader as Mealloader } from "./pages/Home";
+
+//firebase
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/firebaseConfig";
+import { getDocs, collection } from "firebase/firestore";
+import { db } from "./firebase/firebaseConfig";
+
+//actions
+import { action as CreateAction } from "./pages/Create";
+import { action as SignupAction } from "./pages/Signup";
+import { action as LoginAction } from "./pages/Login";
 
 function App() {
-  const { user, dispatch, isAuthReady } = useGlobalContext();
+  const { user, dispatch, authReady } = useContext(GlobalContext);
 
   const routes = createBrowserRouter([
     {
       path: "/",
-      errorElement: <ErrorPage />,
       element: (
         <ProtectedRoutes user={user}>
           <MainLayout />
@@ -45,43 +42,50 @@ function App() {
         {
           index: true,
           element: <Home />,
+          loader: Mealloader,
         },
         {
-          path: "/about",
-          element: <About />,
+          path: "/meal/:title",
+          element: <Meal />,
         },
         {
-          path: "/contact",
-          element: <Contact />,
-        },
-        {
-          path: "/todos",
-          element: <Todos />,
+          path: "/create",
+          element: <Create />,
+          action: CreateAction,
         },
       ],
     },
     {
       path: "/login",
-      errorElement: <ErrorPage />,
       element: user ? <Navigate to="/" /> : <Login />,
       action: LoginAction,
     },
     {
-      path: "/register",
-      errorElement: <ErrorPage />,
-      element: user ? <Navigate to="/" /> : <Register />,
-      action: RegisterAction,
+      path: "/signup",
+      element: user ? <Navigate to="/" /> : <Signup />,
+      action: SignupAction,
     },
   ]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       dispatch({ type: "LOG_IN", payload: user });
-      dispatch({ type: "IS_AUTH_READY" });
+      dispatch({ type: "AUTH_READY" });
     });
-  }, []);
 
-  return <>{isAuthReady && <RouterProvider router={routes} />}</>;
+    //
+    async function getData() {
+      const allData = [];
+      const querySnapshot = await getDocs(collection(db, "myLogin"));
+      querySnapshot.docs.forEach((item) => {
+        allData.push({ idf: item.id, ...item.data() });
+      });
+      dispatch({ type: "INITIAL_DATA", payload: allData });
+    }
+
+    getData();
+  }, []);
+  return <>{authReady && <RouterProvider router={routes} />}</>;
 }
 
 export default App;

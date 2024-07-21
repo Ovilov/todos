@@ -1,7 +1,5 @@
 export { default as Home } from "./Home";
-export { default as About } from "./About";
-export { default as Contact } from "./Contact";
+export { default as Meal } from "./Meal";
 export { default as Login } from "./Login";
-export { default as Register } from "./Register";
-export { default as ErrorPage } from "./ErrorPage";
-export { default as Todos } from "./Todos";
+export { default as Signup } from "./Signup";
+export { default as Create } from "./Create";

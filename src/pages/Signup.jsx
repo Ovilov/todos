@@ -1,42 +1,44 @@
-import { Link, Form, useActionData } from "react-router-dom";
+import { Form, Link, useActionData } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
-import FormInput from "../components/FormInput";
 import { useSignUp } from "../hooks/useSignup";
-import { useLogin } from "../hooks/useLogin";
+import FormInput from "../components/FormInput";
 import { useEffect } from "react";
+import SubmitBtn from "../components/SubmitBtn";
+//context
 
 export const action = async ({ request }) => {
   let formData = await request.formData();
+  let name = formData.get("displayName");
   let email = formData.get("email");
+  let image = formData.get("image");
   let password = formData.get("password");
 
-  return { email, password };
+  return { name, email, image, password };
 };
 
-function Login() {
-  const { signUpWithGoogle } = useSignUp();
-  const { loginWithEmailAndPassword } = useLogin();
-
+function SignUp() {
+  const { signUpWithGoogle, registerWithEmailAndPassword } = useSignUp();
   const actionData = useActionData();
 
   useEffect(() => {
     if (actionData) {
       if (actionData) {
-        loginWithEmailAndPassword(actionData);
+        registerWithEmailAndPassword(actionData);
       }
     }
   }, [actionData]);
+
   return (
     <div className="min h-screen grid place-content-center w-full">
       <div className="mb-3">
         <Form method="post" className="mb-3 w-96">
-          <h1 className="text-4xl font-bold text-center"> Login</h1>
+          <h1 className="text-4xl font-bold text-center">Sign Up</h1>
+          <FormInput label="Display Name" type="text" name="displayName" />
           <FormInput label="Email" type="email" name="email" />
+          <FormInput label="Image" type="url" name="image" />
           <FormInput label="Password" type="password" name="password" />
           <div className="mt-5">
-            <button type="submit" className="btn btn-secondary w-full">
-              Submit
-            </button>
+            <SubmitBtn  onClick={registerWithEmailAndPassword} text="Submit" />
           </div>
         </Form>
       </div>
@@ -47,12 +49,12 @@ function Login() {
           className="btn btn-secondary w-full"
         >
           <FaGoogle className="h-5 w-5" />
-          Login
+          Signup
         </button>
         <p className="mt-4 text-center">
-          Do not have account yet?{" "}
-          <Link to="/signup" className="link link-primary">
-            signUp
+          Already registered?{" "}
+          <Link to="/login" className="link link-primary">
+            login
           </Link>
         </p>
       </div>
@@ -60,4 +62,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default SignUp;

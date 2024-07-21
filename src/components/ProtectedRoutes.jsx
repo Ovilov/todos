@@ -4,8 +4,8 @@ function ProtectedRoutes({ children, user }) {
   if (user) {
     return children;
   } else {
-    return <Navigate to="/register" />;
+    return <Navigate to="/signup" />;
   }
-}
+} 
 
 export default ProtectedRoutes;

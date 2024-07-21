@@ -2,21 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+img {
+  object-fit: cover;
+  height: 200px;
+}
 @layer components {
-  .align-elements {
-    @apply max-w-6xl mx-auto px-4;
+  html,
+  body,
+  #root {
+    @apply h-full;
   }
-  .auth-bg {
-    @apply bg-[url('https://picsum.photos/1000/1300')] bg-cover bg-no-repeat bg-center;
+  #root {
+    @apply flex flex-col;
   }
-
-  .auth-container {
-    @apply grid grid-cols-1 lg:grid-cols-2 min-h-screen w-full;
-  }
-  .auth-left {
-    @apply hidden lg:block auth-bg;
-  }
-  .auth-right {
-    @apply auth-bg lg:bg-none grid place-items-center;
+  .align-content {
+    @apply max-w-6xl w-full mx-auto;
   }
 }
