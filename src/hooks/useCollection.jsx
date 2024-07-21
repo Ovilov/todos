@@ -6,7 +6,7 @@ export function useCollection() {
   const [data, setdata] = useState(null);
 
   useEffect(() => {
-    onSnapshot(collection(db, "myKitchen"), (snapshot) => {
+    onSnapshot(collection(db, "MyKitchen"), (snapshot) => {
       const meals = [];
       snapshot.docs.forEach((doc) => {
         meals.push({ id: doc.id, ...doc.data() });
